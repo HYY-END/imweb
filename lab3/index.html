@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 3 - 自己發想</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body class="page-lab3">
+    <div class="lab-container">
+        <h1>💡 Lab 3: 自己發想</h1>
+        <p>釋放你的創意魔法吧！期待你的點子～</p>
+        <a href="../index.html" class="back-btn">⬅ 返回首頁</a>
+    </div>
+
+    <script>
+        for (let i = 0; i < 20; i++) {
+            let sparkle = document.createElement('div');
+            sparkle.className = 'magic-sparkle';
+            let size = Math.random() * 20 + 5;
+            sparkle.style.width = size + 'px';
+            sparkle.style.height = size + 'px';
+            sparkle.style.left = Math.random() * 100 + 'vw';
+            sparkle.style.top = Math.random() * 100 + 'vh';
+            sparkle.style.animationDelay = Math.random() * 2 + 's';
+            document.body.appendChild(sparkle);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互動式多媒體網頁 - 首頁</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="page-home">
+    <div class="container">
+        <div class="decor star">✨</div>
+        <div class="decor heart">💖</div>
+        <h1>✨ HYY網頁作品 ✨</h1>
+        <div class="nav-container">
+            <a href="lab1/index.html" class="nav-btn btn-1">🎵 Lab 1: 猜歌遊戲</a>
+            <a href="lab2/index.html" class="nav-btn btn-2">📸 Lab 2: 照相亭</a>
+            <a href="lab3/index.html" class="nav-btn btn-3">💡 Lab 3: 自己發想</a>
+        </div>
+    </div>
+
+    <script>
+        // 背景漂浮圓點特效
+        for (let i = 0; i < 25; i++) {
+            let particle = document.createElement('div');
+            particle.className = 'particle';
+            let size = Math.random() * 20 + 5;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.animationDuration = Math.random() * 3 + 3 + 's';
+            document.body.appendChild(particle);
+        }
+    </script>
+</body>
+
+</html>

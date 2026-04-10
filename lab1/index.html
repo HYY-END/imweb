@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 1 - 猜歌遊戲</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body class="page-lab1">
+    <div class="lab-container">
+        <h1>🎵 Lab 1: 猜歌遊戲</h1>
+        <p>跟著節奏一起猜猜這首歌！內容建置中...</p>
+        <a href="../index.html" class="back-btn">⬅ 返回首頁</a>
+    </div>
+
+    <script>
+        const notes = ['🎵', '🎶', '🎼', '🎹', '🎸', '🎧'];
+        for (let i = 0; i < 20; i++) {
+            let note = document.createElement('div');
+            note.className = 'note';
+            note.innerText = notes[Math.floor(Math.random() * notes.length)];
+            note.style.left = Math.random() * 100 + 'vw';
+            note.style.animationDuration = Math.random() * 4 + 3 + 's';
+            note.style.animationDelay = Math.random() * 5 + 's';
+            document.body.appendChild(note);
+        }
+    </script>
+</body>
+</html>
