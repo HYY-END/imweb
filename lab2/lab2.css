@@ -1,0 +1,423 @@
+/* Redesigned Cute Photo Booth Style */
+:root {
+    --primary: #ff85a1;
+    --secondary: #72efdd;
+    --accent: #ffd166;
+    --bg: #fff0f3;
+    --text: #5d4a66;
+    --glass: rgba(255, 255, 255, 0.85);
+    --shadow: 0 15px 35px rgba(255, 133, 161, 0.2);
+    --radius: 24px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body.page-lab2 {
+    font-family: 'Comfortaa', 'Segoe UI', sans-serif;
+    background: radial-gradient(circle at top left, #fff0f3, #f0f7ff) !important;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    /* Fix: Don't center vertically if tall */
+    padding: 3rem 1rem !important;
+    overflow-y: auto !important;
+    /* Fix: Allow scrolling */
+    overflow-x: hidden !important;
+    line-height: 1.6;
+}
+
+.lab-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: none !important;
+    /* Disable conflicting animations */
+    background: transparent !important;
+    /* Let booth-area handle the look */
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+/* Header Section */
+header {
+    margin-bottom: 3rem;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+header h1 {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    letter-spacing: -1px;
+}
+
+header p {
+    font-size: 1.1rem;
+    color: #888;
+}
+
+/* Booth Area (Widescreen optimized) */
+.booth-area {
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius);
+    padding: 2.5rem;
+    box-shadow: var(--shadow);
+    border: 4px solid white;
+    margin-bottom: 4rem;
+}
+
+.booth-layout {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    /* Widescreen ratio */
+    gap: 2.5rem;
+}
+
+@media (max-width: 1024px) {
+    .booth-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Camera Preview */
+.camera-section {
+    position: relative;
+    width: 100%;
+}
+
+.camera-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #111;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 8px solid white;
+}
+
+#video-feed {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.frame-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* Effect Emojis for Frame Overlay */
+.frame-overlay.cloud::after {
+    content: "☁️ ☁️ ☁️ ☁️ ☁️";
+    position: absolute;
+    top: 15px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 2.5rem;
+    filter: drop-shadow(0 0 10px white);
+}
+
+.frame-overlay.heart::after {
+    content: "💖 🌸 💖 🌸";
+    position: absolute;
+    bottom: 15px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 2.5rem;
+}
+
+.frame-overlay.star::after {
+    content: "✨ ⭐ ✨ ⭐ ✨";
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 3rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.frame-overlay.flower::after {
+    content: "🌸 🌼 🌸 🌼";
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 2.2rem;
+}
+
+.frame-overlay.bear::after {
+    content: "🧸 🧸 🧸";
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    font-size: 2.5rem;
+}
+
+.frame-overlay.music::after {
+    content: "🎵 🎶 🎵";
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 2.2rem;
+}
+
+.frame-overlay.glow {
+    border: 10px solid rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0 0 50px var(--primary);
+}
+
+#countdown-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12rem;
+    color: white;
+    text-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    pointer-events: none;
+}
+
+/* Flash Effect */
+.flash {
+    position: fixed;
+    inset: 0;
+    background: white;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.flash.active {
+    animation: quickFlash 0.3s ease-out;
+}
+
+@keyframes quickFlash {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* Controls Section */
+.controls-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.control-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.03);
+    text-align: left;
+}
+
+.control-card h4 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.select-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.select-group:last-child {
+    margin-bottom: 0;
+}
+
+label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #999;
+}
+
+select {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 12px;
+    border: 2px solid #f0f0f0;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: #f9f9f9;
+}
+
+select:focus {
+    border-color: var(--primary);
+    outline: none;
+    background: white;
+}
+
+/* Buttons */
+.btn-main {
+    width: 100%;
+    padding: 1.2rem;
+    border-radius: 50px;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    margin-bottom: 1rem;
+    color: white;
+    background: var(--primary);
+    box-shadow: 0 8px 20px rgba(255, 133, 161, 0.3);
+}
+
+.btn-main:hover:not(:disabled) {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(255, 133, 161, 0.4);
+}
+
+.btn-main.secondary {
+    background: var(--secondary);
+    box-shadow: 0 8px 20px rgba(114, 239, 221, 0.3);
+}
+
+.btn-main.tertiary {
+    background: var(--accent);
+    color: var(--text);
+    box-shadow: 0 8px 20px rgba(255, 209, 102, 0.3);
+}
+
+.btn-main:disabled {
+    background: #e0e0e0;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Photo Wall */
+.gallery-section h3 {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 2rem;
+}
+
+.photo-wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 1rem;
+}
+
+.captured-photo {
+    background: white;
+    padding: 15px 15px 50px 15px;
+    border-radius: 4px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: rotate(var(--rot));
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.captured-photo:hover {
+    transform: scale(1.05) rotate(0deg);
+    z-index: 10;
+}
+
+.captured-photo img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border: 1px solid #eee;
+}
+
+.captured-photo p {
+    margin-top: 15px;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.back-btn {
+    display: inline-block;
+    margin-top: 4rem;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Filter Styles */
+#video-feed.filter-pink {
+    filter: sepia(0.3) saturate(1.4) hue-rotate(-15deg) brightness(1.1);
+}
+
+#video-feed.filter-retro {
+    filter: sepia(0.8) contrast(1.1) brightness(0.9);
+}
+
+#video-feed.filter-dreamy {
+    filter: brightness(1.1) contrast(0.9) saturate(1.2) blur(0.5px);
+}
+
+#video-feed.filter-bw {
+    filter: grayscale(1);
+}
+
+#video-feed.filter-warm {
+    filter: sepia(0.4) saturate(1.5) brightness(1.1);
+}
+
+#video-feed.filter-cool {
+    filter: hue-rotate(180deg) saturate(0.8) brightness(1.1);
+}
+
+#video-feed.filter-vibrant {
+    filter: saturate(2) contrast(1.2);
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Tweaks */
+@media (max-width: 600px) {
+    .booth-area {
+        padding: 1.5rem;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .photo-wall {
+        grid-template-columns: 1fr;
+    }
+}

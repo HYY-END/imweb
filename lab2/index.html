@@ -3,16 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 2 - 照相亭</title>
+    <title>夢幻照相亭 📸 - Lab 2</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+    <!-- 確保引用正確的 CSS 檔案 -->
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="lab2.css">
 </head>
 <body class="page-lab2">
-    <div class="flash"></div>
+    <div class="flash" id="flash-effect"></div>
+    
     <div class="lab-container">
-        <div class="camera-icon">📷</div>
-        <h1>Lab 2: 照相亭</h1>
-        <p>擺好姿勢，笑一個！準備閃光燈囉～</p>
-        <a href="../index.html" class="back-btn">⬅ 返回首頁</a>
+        <header>
+            <div class="camera-icon">📸</div>
+            <h1>夢幻照相亭</h1>
+            <p>在這裡拍出屬於您的專屬回憶 ✨</p>
+        </header>
+
+        <main class="booth-area">
+            <div class="booth-layout">
+                <!-- 左側：相機區域 -->
+                <section class="camera-section">
+                    <div class="camera-wrapper">
+                        <video id="video-feed" autoplay playsinline muted></video>
+                        <div id="frame-overlay" class="frame-overlay none"></div>
+                        <div id="countdown-overlay" class="hidden">3</div>
+                    </div>
+                </section>
+
+                <!-- 右側：控制區域 -->
+                <aside class="controls-section">
+                    <div class="control-card">
+                        <h4>特效選擇 ✨</h4>
+                        <div class="select-group">
+                            <label>濾鏡</label>
+                            <select id="filter-select">
+                                <option value="none">原始效果</option>
+                                <option value="pink">甜美粉嫩</option>
+                                <option value="retro">復古時光</option>
+                                <option value="dreamy">夢幻柔光</option>
+                                <option value="bw">經典黑白</option>
+                                <option value="warm">溫暖陽光</option>
+                                <option value="cool">清透冷調</option>
+                                <option value="vibrant">鮮豔色彩</option>
+                            </select>
+                        </div>
+                        <div class="select-group">
+                            <label>可愛邊框</label>
+                            <select id="frame-select">
+                                <option value="none">無邊框</option>
+                                <option value="cloud">雲朵泡泡</option>
+                                <option value="heart">粉紅愛心</option>
+                                <option value="star">璀璨星空</option>
+                                <option value="flower">小花花</option>
+                                <option value="bear">小熊熊</option>
+                                <option value="music">音樂律動</option>
+                                <option value="glow">霓虹光感</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="control-card action-panel">
+                        <h4>拍照控制 📸</h4>
+                        <button id="btn-camera" class="btn-main">1. 偵測鏡頭 🔍</button>
+                        <button id="btn-shoot" class="btn-main secondary" disabled>2. 四連拍開始 ✨</button>
+                        
+                        <div class="select-group" style="margin-top: 1rem; border-top: 1px dashed #eee; padding-top: 1rem;">
+                            <label>下載版面</label>
+                            <select id="download-layout" class="layout-select">
+                                <option value="vertical">直式長條 (1x4)</option>
+                                <option value="horizontal">橫式拼貼 (2x2)</option>
+                            </select>
+                        </div>
+                        <button id="btn-download" class="btn-main tertiary" disabled>3. 下載照片 💾</button>
+                    </div>
+                </aside>
+            </div>
+        </main>
+
+        <section class="gallery-section">
+            <h3>我的拍立得牆 🖼️</h3>
+            <div id="photo-wall" class="photo-wall">
+                <p class="placeholder-text">拍完照後，這裡會出現可愛的回憶喔～</p>
+            </div>
+        </section>
+
+        <footer>
+            <a href="../index.html" class="back-btn">⬅ 返回首頁</a>
+        </footer>
     </div>
+
+    <!-- 隱藏的 Canvas 用於處理影像 -->
+    <canvas id="capture-canvas" style="display: none;"></canvas>
+    <canvas id="combine-canvas" style="display: none;"></canvas>
+
+    <script src="lab2.js"></script>
 </body>
 </html>
