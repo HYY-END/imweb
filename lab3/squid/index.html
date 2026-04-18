@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一二三木頭人 - 精緻版</title>
+    <link rel="stylesheet" href="../game_style.css">
+    <style>
+        :root {
+            --ground-color: #f1dca7;
+            --grass-color: #91c483;
+            --sky-color: #a2d5f2;
+            --doll-dress: #ff8b94;
+        }
+
+        body {
+            background: var(--sky-color);
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        header {
+            width: 100%;
+            background: rgba(255,255,255,0.3);
+            backdrop-filter: blur(5px);
+            padding: 10px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 5;
+        }
+
+        header h1 { font-size: 1.8rem; margin: 0; color: #444; }
+
+        .game-viewport {
+            width: 100%;
+            max-width: 500px;
+            flex: 1;
+            position: relative;
+            background: var(--grass-color);
+            overflow: hidden;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.2);
+        }
+
+        /* 跑道區域 */
+        .track {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 100%;
+            background: var(--ground-color);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .finish-line {
+            position: absolute;
+            top: 80px;
+            width: 100%;
+            height: 20px;
+            background: white;
+            border-top: 5px dashed #ff4d4d;
+            border-bottom: 5px dashed #ff4d4d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #ff4d4d;
+            font-size: 0.8rem;
+        }
+
+        /* 經典木頭人娃娃 (精緻手繪版) */
+        .doll-container {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 100px;
+            transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 3;
+        }
+
+        .doll-container.looking { transform: translateX(-50%) rotateY(180deg); }
+
+        /* 頭部細節 */
+        .doll-head {
+            width: 35px;
+            height: 40px;
+            background: #ffe0bd;
+            border-radius: 45%;
+            margin: 0 auto;
+            position: relative;
+            border: 2px solid #333;
+            z-index: 2;
+        }
+
+        /* 頭髮 (雙馬尾) */
+        .doll-hair {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            width: 45px;
+            height: 25px;
+            background: #333;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .pigtail {
+            position: absolute;
+            width: 12px;
+            height: 25px;
+            background: #333;
+            top: 15px;
+            border-radius: 5px;
+        }
+        .pigtail.left { left: -8px; transform: rotate(20deg); }
+        .pigtail.right { right: -8px; transform: rotate(-20deg); }
+
+        /* 臉部 */
+        .doll-eyes {
+            position: absolute;
+            top: 18px;
+            left: 5px;
+            width: 25px;
+            display: flex;
+            justify-content: space-around;
+        }
+        .eye { width: 4px; height: 4px; background: #000; border-radius: 50%; }
+        .doll-mouth {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 2px;
+            background: #ff8b94;
+            border-radius: 2px;
+        }
+
+        /* 身體與衣服 */
+        .doll-body {
+            width: 40px;
+            height: 45px;
+            background: #ffa500; /* Orange Dress */
+            border-radius: 5px 5px 15px 15px;
+            margin: -5px auto 0;
+            border: 2px solid #333;
+            position: relative;
+        }
+
+        .doll-shirt {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 15px;
+            background: #ffff00; /* Yellow Shirt */
+            border-radius: 3px 3px 0 0;
+            border-bottom: 2px solid #333;
+        }
+
+        /* 腿 */
+        .doll-legs {
+            width: 25px;
+            height: 15px;
+            margin: -2px auto 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .leg { width: 8px; height: 100%; background: #ffe0bd; border: 2px solid #333; border-top: none; }
+
+        /* 紅綠燈盒 */
+        .traffic-light {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 35px;
+            height: 80px;
+            background: #333;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+            padding: 5px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .light-bulb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #222;
+            transition: 0.2s;
+        }
+
+        .light-bulb.red.active { background: #ff4d4d; box-shadow: 0 0 20px #ff4d4d; }
+        .light-bulb.green.active { background: #2ecc71; box-shadow: 0 0 20px #2ecc71; }
+
+        /* 玩家 */
+        .player-refined {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 4;
+            transition: bottom 0.1s linear;
+        }
+
+        .player-refined .char {
+            font-size: 3rem;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+        }
+
+        /* UI 元件 */
+        .timer-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            z-index: 10;
+        }
+
+        .controls-refined {
+            width: 100%;
+            background: #fff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+        }
+
+        .run-btn-refined {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #ff8b94, #ff7171);
+            border: 6px solid #fff;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255, 139, 148, 0.4);
+            user-select: none;
+            touch-action: manipulation;
+            transition: transform 0.1s;
+        }
+
+        .run-btn-refined:active { transform: scale(0.9) translateY(4px); }
+
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(5px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 100;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .btn-fancy {
+            padding: 12px 40px;
+            background: var(--doll-dress);
+            border: none;
+            border-radius: 30px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(255,139,148,0.4);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>一二三木頭人</h1>
+    </header>
+
+    <div class="game-viewport">
+        <div class="timer-panel">⏱️ <span id="time-left">15</span>s</div>
+        
+        <div class="track">
+            <div class="finish-line">FINISH LINE</div>
+        </div>
+
+        <div class="doll-container" id="doll">
+            <div class="doll-head">
+                <div class="doll-hair">
+                    <div class="pigtail left"></div>
+                    <div class="pigtail right"></div>
+                </div>
+                <div class="doll-eyes">
+                    <div class="eye"></div>
+                    <div class="eye"></div>
+                </div>
+                <div class="doll-mouth"></div>
+            </div>
+            <div class="doll-body">
+                <div class="doll-shirt"></div>
+            </div>
+            <div class="doll-legs">
+                <div class="leg"></div>
+                <div class="leg"></div>
+            </div>
+        </div>
+
+        <div class="traffic-light">
+            <div class="light-bulb red" id="light-red"></div>
+            <div class="light-bulb green active" id="light-green"></div>
+        </div>
+
+        <div class="player-refined" id="player">
+            <div class="char">🏃</div>
+        </div>
+
+        <!-- 初始畫面 -->
+        <div class="overlay" id="start-overlay">
+            <h2 style="font-size: 2rem; color: var(--doll-dress);">挑戰 15 秒！</h2>
+            <p>在時間耗盡前抵達終點線<br>紅燈亮起時嚴禁移動！</p>
+            <button class="btn-fancy" onclick="startGame()">開始挑戰</button>
+        </div>
+
+        <!-- 結束畫面 -->
+        <div class="overlay" id="end-overlay" style="display: none;">
+            <h2 id="result-title" style="font-size: 2.5rem;"></h2>
+            <p id="result-msg" style="font-size: 1.1rem; margin-top: 10px;"></p>
+            <button class="btn-fancy" onclick="location.reload()">再試一次</button>
+        </div>
+    </div>
+
+    <div class="controls-refined">
+        <button class="run-btn-refined" id="run-btn">跑！</button>
+        <a href="../index.html" style="margin-top: 15px; color: #aaa; text-decoration: none; font-size: 0.9rem;">⬅ 返回遊戲屋</a>
+    </div>
+
+    <script>
+        const player = document.getElementById('player');
+        const doll = document.getElementById('doll');
+        const lightRed = document.getElementById('light-red');
+        const lightGreen = document.getElementById('light-green');
+        const runBtn = document.getElementById('run-btn');
+        const timeLeftEl = document.getElementById('time-left');
+        const startOverlay = document.getElementById('start-overlay');
+        const endOverlay = document.getElementById('end-overlay');
+        const resultTitle = document.getElementById('result-title');
+        const resultMsg = document.getElementById('result-msg');
+
+        let gameRunning = false;
+        let isRedLight = false;
+        let isMoving = false;
+        let playerY = 30; 
+        let timeLeft = 15;
+        let timerId;
+
+        // --- 音效系統 ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playChant(duration) {
+            // 模擬 "Mughunghwa kkochi pieot seumnida" (一二三木頭人)
+            // 簡化旋律: G4 G4 A4 G4 C5 (1 2 3 木頭人)
+            const melody = [
+                { f: 392.00, t: 0 },    // G4
+                { f: 392.00, t: 0.2 },  // G4
+                { f: 440.00, t: 0.4 },  // A4
+                { f: 392.00, t: 0.6 },  // G4
+                { f: 523.25, t: 0.8 },  // C5
+                { f: 493.88, t: 1.0 }   // B4 (稍停頓)
+            ];
+            
+            const totalSteps = melody.length;
+            const stepTime = (duration / 1000) / totalSteps;
+
+            melody.forEach((note, i) => {
+                const osc = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(note.f, audioCtx.currentTime + (i * stepTime));
+                g.gain.setValueAtTime(0.1, audioCtx.currentTime + (i * stepTime));
+                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (i * stepTime) + stepTime * 0.8);
+                osc.connect(g); g.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + (i * stepTime));
+                osc.stop(audioCtx.currentTime + (i * stepTime) + stepTime * 0.8);
+            });
+        }
+
+        function playAlert() {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+            g.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+            osc.connect(g); g.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function playWin() {
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((f, i) => {
+                const osc = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(f, audioCtx.currentTime + (i * 0.1));
+                g.gain.setValueAtTime(0.1, audioCtx.currentTime + (i * 0.1));
+                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (i * 0.1) + 0.3);
+                osc.connect(g); g.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + (i * 0.1));
+                osc.stop(audioCtx.currentTime + (i * 0.1) + 0.3);
+            });
+        }
+
+        function playFail() {
+            const osc = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(200, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.5);
+            g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            g.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.5);
+            osc.connect(g); g.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        function startGame() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            startOverlay.style.display = 'none';
+            gameRunning = true;
+            loopLight();
+            timerId = setInterval(() => {
+                timeLeft--;
+                timeLeftEl.textContent = timeLeft;
+                if (timeLeft <= 0) endGame(false, "超時！你沒能跑過終點。");
+            }, 1000);
+        }
+
+        async function loopLight() {
+            if (!gameRunning) return;
+
+            // Green Light
+            isRedLight = false;
+            lightGreen.classList.add('active');
+            lightRed.classList.remove('active');
+            doll.classList.remove('looking');
+            
+            const waitTime = Math.random() * 1500 + 1500;
+            playChant(waitTime);
+            
+            await new Promise(r => setTimeout(r, waitTime));
+            if (!gameRunning) return;
+
+            // Red Light
+            isRedLight = true;
+            lightGreen.classList.remove('active');
+            lightRed.classList.add('active');
+            doll.classList.add('looking');
+            playAlert(); // 警示音
+
+            await new Promise(r => setTimeout(r, 200)); 
+            if (isMoving && gameRunning) {
+                endGame(false, "被抓到了！紅燈時嚴禁移動。");
+                return;
+            }
+
+            await new Promise(r => setTimeout(r, Math.random() * 1500 + 1000));
+            loopLight();
+        }
+
+        function endGame(success, msg) {
+            gameRunning = false;
+            clearInterval(timerId);
+            endOverlay.style.display = 'flex';
+            resultTitle.textContent = success ? "成功抵達！" : "挑戰失敗";
+            resultTitle.style.color = success ? "#2ecc71" : "#ff4d4d";
+            resultMsg.textContent = msg;
+            if (success) playWin();
+            else playFail();
+        }
+
+        // 動作檢測與更新
+        const startMove = () => { if (gameRunning) isMoving = true; };
+        const stopMove = () => { isMoving = false; };
+
+        runBtn.addEventListener('mousedown', startMove);
+        runBtn.addEventListener('mouseup', stopMove);
+        runBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startMove(); });
+        runBtn.addEventListener('touchend', stopMove);
+
+        // 鍵盤支援
+        document.addEventListener('keydown', (e) => { if (e.code === 'Space') startMove(); });
+        document.addEventListener('keyup', (e) => { if (e.code === 'Space') stopMove(); });
+
+        function update() {
+            if (gameRunning) {
+                if (isMoving) {
+                    playerY += 2.5;
+                    player.style.bottom = playerY + 'px';
+                    
+                    if (isRedLight) {
+                        endGame(false, "紅燈時還敢亂動！");
+                    }
+
+                    // 終點檢測
+                    const viewportHeight = document.querySelector('.game-viewport').offsetHeight;
+                    if (playerY >= viewportHeight - 120) {
+                        endGame(true, "太厲害了！你在限時內成功達陣！");
+                    }
+                }
+            }
+            requestAnimationFrame(update);
+        }
+        update();
+    </script>
+</body>
+</html>

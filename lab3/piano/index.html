@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>夢幻鋼琴家 - 可愛遊戲屋</title>
+    <link rel="stylesheet" href="../game_style.css">
+    <style>
+        body {
+            background: linear-gradient(to bottom, #2b1055, #7597de);
+            color: white;
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        header {
+            margin-bottom: 5px;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .score-board {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .piano-container {
+            width: 100%;
+            max-width: 400px;
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            position: relative;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .column {
+            flex: 1;
+            height: 100%;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .column:last-child { border-right: none; }
+
+        .tile {
+            position: absolute;
+            width: 100%;
+            height: 120px;
+            background: #222;
+            border-radius: 5px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .tile.clicked {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Moon and Stars Decoration */
+        .moon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #fefcd7;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #fefcd7;
+            z-index: -1;
+        }
+
+        .moon::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 15px;
+            width: 50px;
+            height: 50px;
+            background: #2b1055;
+            border-radius: 50%;
+        }
+
+        .star-decor {
+            position: fixed;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+            z-index: -1;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .song-list {
+            display: grid;
+            gap: 10px;
+            width: 100%;
+            max-width: 250px;
+            margin-top: 20px;
+        }
+
+        .song-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .song-btn:hover {
+            background: white;
+            color: #2b1055;
+        }
+
+        .song-btn.active {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .start-btn {
+            padding: 10px 30px;
+            font-size: 1.2rem;
+            background: var(--primary-color);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            margin-top: 20px;
+        }
+
+        .back-home {
+            margin-top: 5px;
+            text-decoration: none;
+            color: rgba(255,255,255,0.7);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="moon"></div>
+    <div id="stars-container"></div>
+
+    <header>
+        <h1>🎹 夢幻鋼琴家</h1>
+    </header>
+
+    <div class="score-board">得分: <span id="score">0</span></div>
+
+    <div class="piano-container" id="piano-board">
+        <div class="column" data-col="0"></div>
+        <div class="column" data-col="1"></div>
+        <div class="column" data-col="2"></div>
+        <div class="column" data-col="3"></div>
+
+        <!-- 初始選擇畫面 -->
+        <div class="overlay" id="start-overlay">
+            <h2>選擇曲目</h2>
+            <div class="song-list" id="song-list" style="max-height: 50vh; overflow-y: auto;">
+                <button class="song-btn active" onclick="selectSong(0)">✨ 小星星</button>
+                <button class="song-btn" onclick="selectSong(1)">🎂 祝你生日快樂</button>
+                <button class="song-btn" onclick="selectSong(2)">🐝 小蜜蜂</button>
+                <div style="margin: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.3); font-size: 0.8rem;">--- TWS 特輯 ---</div>
+                <button class="song-btn" onclick="selectSong(3)">🎵 OVERDRIVE</button>
+                <button class="song-btn" onclick="selectSong(4)">🎵 다시 만난 오늘</button>
+                <button class="song-btn" onclick="selectSong(5)">🎵 Plot Twist</button>
+            </div>
+            <button class="start-btn" id="start-game-btn">開始彈奏</button>
+        </div>
+
+        <!-- 遊戲結束畫面 -->
+        <div class="overlay" id="game-over-overlay" style="display: none;">
+            <h2>遊戲結束</h2>
+            <p>最終得分: <span id="final-score">0</span></p>
+            <button class="start-btn" onclick="showStartScreen()">返回選歌</button>
+        </div>
+    </div>
+
+    <a href="../index.html" class="back-home">⬅ 返回遊戲屋</a>
+
+    <script>
+        const board = document.getElementById('piano-board');
+        const columns = document.querySelectorAll('.column');
+        const scoreElement = document.getElementById('score');
+        const finalScoreElement = document.getElementById('final-score');
+        const startOverlay = document.getElementById('start-overlay');
+        const gameOverOverlay = document.getElementById('game-over-overlay');
+        const startBtn = document.getElementById('start-game-btn');
+
+        // --- 音效與歌曲數據 ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        const freq = {
+            'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23, 'G4': 392.00, 'A4': 440.00, 'B4': 493.88,
+            'C5': 523.25, 'D5': 587.33, 'E5': 659.25, 'F5': 698.46, 'G5': 783.99, 'A5': 880.00, 'B5': 987.77
+        };
+
+        const songs = [
+            {
+                name: "小星星",
+                notes: ['C4', 'C4', 'G4', 'G4', 'A4', 'A4', 'G4', 'F4', 'F4', 'E4', 'E4', 'D4', 'D4', 'C4']
+            },
+            {
+                name: "祝你生日快樂",
+                notes: ['G4', 'G4', 'A4', 'G4', 'C5', 'B4', 'G4', 'G4', 'A4', 'G4', 'D5', 'C5']
+            },
+            {
+                name: "小蜜蜂",
+                notes: ['G4', 'E4', 'E4', 'F4', 'D4', 'D4', 'C4', 'D4', 'E4', 'F4', 'G4', 'G4', 'G4']
+            },
+            {
+                name: "OVERDRIVE",
+                url: "so/TWS (투어스) 'OVERDRIVE' Official MV.mp3",
+                notes: ['C5', 'B4', 'A4', 'G4', 'F4', 'E4', 'D4', 'C4'] // Fallback random notes
+            },
+            {
+                name: "다시 만난 오늘",
+                url: "so/TWS (투어스) '다시 만난 오늘' Performance Film.mp3",
+                notes: ['G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5']
+            },
+            {
+                name: "Plot Twist",
+                url: "so/첫 만남은 계획대로 되지 않아.mp3",
+                notes: ['C4', 'E4', 'G4', 'B4', 'C5', 'E5', 'G5', 'B5']
+            }
+        ];
+
+        let currentSongIndex = 0;
+        let bgMusic = null;
+        
+        function selectSong(index) {
+            currentSongIndex = index;
+            const buttons = document.querySelectorAll('.song-btn');
+            buttons.forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+
+            // 如果有背景音樂，先停止之前的
+            if (bgMusic) {
+                bgMusic.pause();
+                bgMusic = null;
+            }
+        }
+
+        function playNote(frequency) {
+            // 如果正在撥放 MP3，合成音可以小聲一點或不播
+            const volume = bgMusic ? 0.05 : 0.2;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+            gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.5);
+        }
+
+        // --- 遊戲邏輯 ---
+        let score = 0;
+        let speed = 2.5;
+        let gameRunning = false;
+        let tiles = [];
+        let spawnTimer = 0;
+
+        function createTile() {
+            const colIndex = Math.floor(Math.random() * 4);
+            const col = columns[colIndex];
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+            tile.style.top = '-150px';
+            col.appendChild(tile);
+            
+            const tileData = { element: tile, y: -150, clicked: false };
+            tile.addEventListener('mousedown', () => clickTile(tileData));
+            tile.addEventListener('touchstart', (e) => { e.preventDefault(); clickTile(tileData); });
+            tiles.push(tileData);
+        }
+
+        function clickTile(tileData) {
+            if (tileData.clicked || !gameRunning) return;
+            tileData.clicked = true;
+            tileData.element.classList.add('clicked');
+            
+            const song = songs[currentSongIndex];
+            const noteName = song.notes[score % song.notes.length];
+            playNote(freq[noteName]);
+
+            score++;
+            scoreElement.textContent = score;
+            speed += 0.03;
+        }
+
+        function update() {
+            if (!gameRunning) return;
+
+            spawnTimer += 1;
+            if (spawnTimer > 60 / (speed / 2)) {
+                createTile();
+                spawnTimer = 0;
+            }
+
+            for (let i = tiles.length - 1; i >= 0; i--) {
+                const tile = tiles[i];
+                tile.y += speed;
+                tile.element.style.top = tile.y + 'px';
+
+                if (tile.y > board.offsetHeight) {
+                    if (!tile.clicked) {
+                        endGame();
+                        return;
+                    }
+                    tile.element.remove();
+                    tiles.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        function showStartScreen() {
+            gameOverOverlay.style.display = 'none';
+            startOverlay.style.display = 'flex';
+            score = 0;
+            scoreElement.textContent = score;
+            tiles.forEach(t => t.element.remove());
+            tiles = [];
+            if (bgMusic) {
+                bgMusic.pause();
+                bgMusic = null;
+            }
+        }
+
+        function endGame() {
+            gameRunning = false;
+            finalScoreElement.textContent = score;
+            gameOverOverlay.style.display = 'flex';
+            if (bgMusic) {
+                bgMusic.pause();
+            }
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const song = songs[currentSongIndex];
+            if (song.url) {
+                bgMusic = new Audio(song.url);
+                bgMusic.play();
+            }
+
+            startOverlay.style.display = 'none';
+            gameRunning = true;
+            speed = 2.5;
+            update();
+        });
+
+        // 裝飾背景星空
+        const starsContainer = document.getElementById('stars-container');
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.className = 'star-decor';
+            const size = Math.random() * 3 + 1;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = Math.random() * 100 + 'vh';
+            star.style.animationDelay = Math.random() * 2 + 's';
+            starsContainer.appendChild(star);
+        }
+    </script>
+</body>
+</html>

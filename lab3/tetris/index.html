@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>萌貓俄羅斯方塊 - 可愛遊戲屋</title>
+    <link rel="stylesheet" href="../game_style.css">
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background: linear-gradient(135deg, #fff5f7 0%, #f0f7ff 100%);
+            color: var(--text-color);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        header p { font-size: 0.7rem; margin: 0; }
+
+        .game-layout {
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            flex: 1;
+            min-height: 0;
+            max-width: 95vw;
+        }
+
+        #tetris-canvas {
+            border: 3px solid #f0f0f0;
+            border-radius: 10px;
+            background-color: #fafafa;
+            height: 100%;
+            width: auto;
+            aspect-ratio: 10/20;
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 80px;
+            justify-content: center;
+        }
+
+        .info-box {
+            background: #fff9f0;
+            padding: 5px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid var(--accent-color);
+        }
+
+        .info-box h3 {
+            font-size: 0.6rem;
+            color: #888;
+            margin-bottom: 2px;
+        }
+
+        .info-box p {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        #next-canvas {
+            background: #fdfcfb;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+        }
+
+        .controls {
+            margin-top: 5px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .ctrl-btn {
+            background: white;
+            border: 2px solid #eee;
+            padding: 8px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-wide {
+            grid-column: span 3;
+        }
+
+        .back-home {
+            margin-top: 5px;
+            text-decoration: none;
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+
+        .meme-decor {
+            position: absolute;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .meme-decor img {
+            width: 40px;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .maxwell { bottom: 10px; left: -45px; animation: float 4s infinite; }
+        .happy { top: -10px; right: -40px; animation: float 3s infinite reverse; }
+        .banana { bottom: 10px; right: -45px; animation: float 5s infinite; }
+
+        @media (max-width: 500px) {
+            .meme-decor { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🧱 萌貓俄羅斯方塊</h1>
+        <p>將方塊填滿一整行來消除吧！✨</p>
+    </header>
+
+    <div class="game-layout">
+        <div class="meme-decor maxwell">
+            <img src="https://media.tenor.com/On79ZrtC_Z8AAAAi/maxwell-cat-spinning.gif" alt="Maxwell">
+        </div>
+        <div class="meme-decor happy">
+            <img src="https://media.tenor.com/S6LidUvYp6AAAAAi/happy-cat.gif" alt="Happy Cat">
+        </div>
+        <div class="meme-decor banana">
+            <img src="https://media.tenor.com/2pI_P_hYv6IAAAAi/banana-cat-crying.gif" alt="Banana Cat">
+        </div>
+
+        <canvas id="tetris-canvas" width="240" height="480"></canvas>
+        
+        <div class="side-panel">
+            <div class="info-box">
+                <h3>NEXT</h3>
+                <canvas id="next-canvas" width="80" height="80"></canvas>
+            </div>
+            <div class="info-box">
+                <h3>SCORE</h3>
+                <p id="score">0</p>
+            </div>
+            <div class="info-box">
+                <h3>LEVEL</h3>
+                <p id="level">1</p>
+            </div>
+            <button class="play-btn" id="start-btn" style="padding: 5px; font-size: 0.8rem;">開始</button>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="ctrl-btn" id="left-btn">⬅️</button>
+        <button class="ctrl-btn" id="rotate-btn">🔄</button>
+        <button class="ctrl-btn" id="right-btn">➡️</button>
+        <button class="ctrl-btn btn-wide" id="down-btn">🔽 下落</button>
+    </div>
+
+    <a href="../index.html" class="back-home">⬅ 返回遊戲屋</a>
+
+    <script>
+        const canvas = document.getElementById('tetris-canvas');
+        const ctx = canvas.getContext('2d');
+        const nextCanvas = document.getElementById('next-canvas');
+        const nextCtx = nextCanvas.getContext('2d');
+        
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type, duration) {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + duration);
+        }
+
+        const sounds = {
+            move: () => playSound(400, 'sine', 0.05),
+            rotate: () => playSound(600, 'sine', 0.05),
+            clear: () => {
+                playSound(523, 'square', 0.1);
+                setTimeout(() => playSound(659, 'square', 0.1), 100);
+            },
+            gameOver: () => playSound(200, 'sawtooth', 0.5)
+        };
+
+        const BLOCK_SIZE = 24;
+        const COLS = 10;
+        const ROWS = 20;
+        const COLORS = [null, '#FF9FB2', '#A0E7E5', '#FFD166', '#B19CD9', '#FFB347', '#77DD77', '#FF6961'];
+        const SHAPES = [[], [[1, 1, 1, 1]], [[2, 0, 0], [2, 2, 2]], [[0, 0, 3], [3, 3, 3]], [[4, 4], [4, 4]], [[0, 5, 5], [5, 5, 0]], [[0, 6, 0], [6, 6, 6]], [[7, 7, 0], [0, 7, 7]]];
+
+        let board = Array.from({length: ROWS}, () => Array(COLS).fill(0));
+        let score = 0, level = 1, piece = null, nextPiece = null, dropCounter = 0, dropInterval = 1000, lastTime = 0, gameRunning = false;
+
+        function createPiece(type) { return { pos: {x: 3, y: 0}, shape: SHAPES[type], type }; }
+
+        function drawBlock(context, x, y, type, size = BLOCK_SIZE) {
+            context.fillStyle = COLORS[type];
+            context.fillRect(x * size, y * size, size, size);
+            context.strokeStyle = 'white';
+            context.strokeRect(x * size, y * size, size, size);
+        }
+
+        function draw() {
+            ctx.fillStyle = '#fafafa';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            board.forEach((row, y) => row.forEach((val, x) => { if(val) drawBlock(ctx, x, y, val); }));
+            if(piece) piece.shape.forEach((row, y) => row.forEach((val, x) => { if(val) drawBlock(ctx, piece.pos.x + x, piece.pos.y + y, val); }));
+
+            nextCtx.clearRect(0, 0, nextCanvas.width, nextCanvas.height);
+            if(nextPiece) nextPiece.shape.forEach((row, y) => row.forEach((val, x) => { if(val) drawBlock(nextCtx, x + 1, y + 1, val, 10); }));
+        }
+
+        function collide(b, p) {
+            for(let y=0; y<p.shape.length; y++) for(let x=0; x<p.shape[y].length; x++)
+                if(p.shape[y][x] && (b[y+p.pos.y] && b[y+p.pos.y][x+p.pos.x]) !== 0) return true;
+            return false;
+        }
+
+        function merge(b, p) { p.shape.forEach((row, y) => row.forEach((val, x) => { if(val) b[y+p.pos.y][x+p.pos.x] = val; })); }
+        function rotate(m) { return m[0].map((_, i) => m.map(row => row[i]).reverse()); }
+
+        function playerMove(d) {
+            piece.pos.x += d;
+            if(collide(board, piece)) piece.pos.x -= d;
+            else sounds.move();
+        }
+
+        function playerRotate() {
+            const old = piece.shape;
+            piece.shape = rotate(piece.shape);
+            if(collide(board, piece)) piece.shape = old;
+            else sounds.rotate();
+        }
+
+        function playerDrop() {
+            piece.pos.y++;
+            if(collide(board, piece)) {
+                piece.pos.y--;
+                merge(board, piece);
+                playerReset();
+                arenaSweep();
+                updateScore();
+            }
+            dropCounter = 0;
+        }
+
+        function arenaSweep() {
+            let rowCount = 0;
+            outer: for(let y=ROWS-1; y>0; y--) {
+                for(let x=0; x<COLS; x++) if(!board[y][x]) continue outer;
+                board.splice(y, 1);
+                board.unshift(new Array(COLS).fill(0));
+                y++; rowCount++;
+            }
+            if(rowCount) { score += rowCount * 100; sounds.clear(); }
+        }
+
+        function playerReset() {
+            if(!nextPiece) nextPiece = createPiece(Math.floor(Math.random()*7)+1);
+            piece = nextPiece;
+            nextPiece = createPiece(Math.floor(Math.random()*7)+1);
+            if(collide(board, piece)) {
+                sounds.gameOver(); gameRunning = false; alert('Game Over!');
+                board.forEach(r => r.fill(0)); score = 0; updateScore();
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = level;
+        }
+
+        function update(time = 0) {
+            if(!gameRunning) return;
+            const dt = time - lastTime; lastTime = time;
+            dropCounter += dt;
+            if(dropCounter > dropInterval) playerDrop();
+            draw(); requestAnimationFrame(update);
+        }
+
+        document.addEventListener('keydown', e => {
+            if(!gameRunning) return;
+            if(e.keyCode===37) playerMove(-1); else if(e.keyCode===39) playerMove(1);
+            else if(e.keyCode===40) playerDrop(); else if(e.keyCode===38) playerRotate();
+        });
+
+        document.getElementById('left-btn').onclick = () => playerMove(-1);
+        document.getElementById('right-btn').onclick = () => playerMove(1);
+        document.getElementById('rotate-btn').onclick = () => playerRotate();
+        document.getElementById('down-btn').onclick = () => playerDrop();
+        document.getElementById('start-btn').onclick = () => {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            gameRunning = true; playerReset(); update();
+        };
+        draw();
+    </script>
+</body>
+</html>
