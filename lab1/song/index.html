@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melody Master - 猜歌遊戲</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <main class="container">
+        <!-- Start Screen -->
+        <section id="start-screen" class="screen active">
+            <div class="hero">
+                <div class="icon-wrapper">
+                    <span style="font-size: 3.5rem;">🐱</span>
+                </div>
+                <h1>Melody Master</h1>
+                <p>跟著小貓一起猜歌吧！✨</p>
+                <div class="button-group">
+                    <button id="start-btn" class="btn primary-btn">開始挑戰</button>
+                    <a href="../../index.html" class="btn secondary-btn" style="text-decoration: none; display: inline-block; margin-top: 1rem;">返回首頁</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Game Screen -->
+        <section id="game-screen" class="screen">
+            <header class="game-header">
+                <div class="progress-info">
+                    <span id="current-round">Round 1/6</span>
+                    <div class="progress-bar-bg">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                </div>
+                <div class="timer-display">⏱ <span id="timer">30</span>s</div>
+                <div class="score-display">Score: <span id="score">0</span></div>
+            </header>
+
+            <div class="vinyl-container">
+                <div id="vinyl" class="vinyl">
+                    <div class="vinyl-label"></div>
+                </div>
+                <button id="play-btn" class="play-btn-large">
+                    <span id="play-icon">▶</span>
+                </button>
+            </div>
+
+            <div id="feedback" class="feedback">請點擊播放旋律</div>
+
+            <div id="input-container" class="answer-container">
+                <input type="text" id="answer-input" placeholder="輸入歌曲名稱..." autocomplete="off">
+                <button id="submit-btn" class="btn primary-btn" style="width: 100%; margin-top: 1rem;">送出答案</button>
+                <button id="next-btn" class="btn secondary-btn" style="width: 100%; margin-top: 1rem; display: none;">下一題</button>
+            </div>
+        </section>
+
+        <!-- Result Screen -->
+        <section id="result-screen" class="screen">
+            <div class="result-card">
+                <h2>挑戰結束！</h2>
+                <div class="final-score-circle">
+                    <span id="final-score">0</span>
+                    <small>分</small>
+                </div>
+                <p id="result-message">做得好！繼續加油！</p>
+                <button id="restart-btn" class="btn secondary-btn">再玩一次</button>
+            </div>
+        </section>
+    </main>
+
+    <audio id="game-audio"></audio>
+    <script src="script.js"></script>
+</body>
+</html>

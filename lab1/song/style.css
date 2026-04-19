@@ -1,0 +1,342 @@
+:root {
+    --primary: #ff8fb1;
+    --primary-glow: rgba(255, 143, 177, 0.3);
+    --secondary: #ffc2a1;
+    --bg-cute: #fff9f9;
+    --text-main: #7c5a5a;
+    --glass: rgba(255, 255, 255, 0.8);
+    --glass-border: rgba(255, 182, 193, 0.3);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--bg-cute);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Background Decorations */
+.background-blobs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    overflow: hidden;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.6;
+    animation: bounce 10s infinite alternate cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+.blob-1 {
+    width: 300px;
+    height: 300px;
+    background: #ffdeeb;
+    top: -50px;
+    left: -50px;
+}
+
+.blob-2 {
+    width: 250px;
+    height: 250px;
+    background: #e0f2fe;
+    bottom: -30px;
+    right: -30px;
+    animation-delay: -2s;
+}
+
+.blob-3 {
+    width: 200px;
+    height: 200px;
+    background: #fef3c7;
+    top: 60%;
+    left: 10%;
+    animation-delay: -4s;
+}
+
+@keyframes bounce {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(30px, -30px) scale(1.15); }
+}
+
+/* Container & Screens */
+.container {
+    width: 100%;
+    max-width: 450px;
+    padding: 2rem;
+    position: relative;
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    border: 4px solid var(--glass-border);
+    border-radius: 40px;
+    box-shadow: 0 20px 40px rgba(255, 182, 193, 0.2);
+}
+
+.screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.screen.active {
+    display: flex;
+}
+
+@keyframes popIn {
+    0% { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* Hero Section */
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(0,0,0,0.05);
+}
+
+.hero p {
+    font-size: 1.1rem;
+    color: #a38b8b;
+    margin-bottom: 2rem;
+    font-weight: 500;
+}
+
+.icon-wrapper {
+    width: 90px;
+    height: 90px;
+    background: #fff;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    color: var(--primary);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    border: 3px solid #ffe4e9;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.8rem 2rem;
+    border-radius: 20px;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.primary-btn {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 8px 0px #e07a97;
+    margin-bottom: 8px;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 0px #e07a97;
+}
+
+.primary-btn:active {
+    transform: translateY(6px);
+    box-shadow: 0 2px 0px #e07a97;
+}
+
+.secondary-btn {
+    background: #fff;
+    border: 3px solid #ffe4e9;
+    color: var(--primary);
+    margin-top: 1rem;
+}
+
+.secondary-btn:hover {
+    background: #fff0f3;
+}
+
+/* Game Header */
+.game-header {
+    width: 100%;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.timer-display {
+    font-weight: 800;
+    color: var(--primary);
+    background: #fff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 12px;
+    border: 2px solid #ffe4e9;
+    min-width: 80px;
+}
+
+.progress-info span {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.progress-bar-bg {
+    height: 12px;
+    background: #fff1f3;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #ffe4e9;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 10px;
+    transition: width 0.5s;
+}
+
+.score-display {
+    margin-top: 0.5rem;
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--text-main);
+}
+
+/* Vinyl Record - "Melody Plate" */
+.vinyl-container {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin-bottom: 1.5rem;
+}
+
+.vinyl {
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    border-radius: 50%;
+    border: 8px solid #ffe4e9;
+    box-shadow: 0 10px 20px rgba(255, 143, 177, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.vinyl.playing {
+    animation: rotate 4s linear infinite;
+}
+
+.vinyl-label {
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle, #ffcbd1 0%, var(--primary) 100%);
+    border-radius: 50%;
+    border: 5px solid #fff;
+    position: relative;
+}
+
+/* Add a "Sparkle" to the record */
+.vinyl-label::after {
+    content: '✨';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.2rem;
+}
+
+.play-btn-large {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: #fff;
+    border: 3px solid var(--primary);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--primary);
+    font-size: 1.2rem;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+/* Answer Input Container */
+.answer-container {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+#answer-input {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border-radius: 20px;
+    border: 3px solid #ffe4e9;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    background: #fff;
+    outline: none;
+    transition: all 0.3s;
+    text-align: center;
+}
+
+#answer-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+#answer-input::placeholder {
+    color: #ccbaba;
+}
+
+.feedback {
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+/* Result Card */
+.final-score-circle {
+    width: 120px;
+    height: 120px;
+    margin: 1.5rem auto;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 10px 20px var(--primary-glow);
+}
+
+.final-score-circle span {
+    font-size: 3rem;
+    font-weight: 800;
+}
