@@ -56,9 +56,20 @@
 
             <div id="feedback" class="feedback">請點擊播放旋律</div>
 
+            <button id="guess-early-btn" class="btn primary-btn" style="width: 100%; margin-bottom: 1rem; display: none;">我要猜歌！✨</button>
+
+            <div id="extra-time-container" class="extra-time-container" style="display: none;">
+                <p>時間到！要再多聽 5 秒嗎？</p>
+                <div class="button-group-row">
+                    <button id="add-time-btn" class="btn primary-btn">再聽 5 秒</button>
+                    <button id="skip-time-btn" class="btn secondary-btn">直接作答</button>
+                </div>
+            </div>
+
             <div id="input-container" class="answer-container">
-                <input type="text" id="answer-input" placeholder="輸入歌曲名稱..." autocomplete="off">
-                <button id="submit-btn" class="btn primary-btn" style="width: 100%; margin-top: 1rem;">送出答案</button>
+                <div id="options-container" class="options-grid" style="display: none;">
+                    <!-- Options will be generated here -->
+                </div>
                 <button id="next-btn" class="btn secondary-btn" style="width: 100%; margin-top: 1rem; display: none;">下一題</button>
             </div>
         </section>

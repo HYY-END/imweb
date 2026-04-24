@@ -15,6 +15,8 @@ let gameActive = false;
 let playTimeout = null;
 let countdownInterval = null;
 let timeLeft = 30;
+let extraTimeOffered = false;
+let canGuess = false;
 
 // DOM Elements
 const startScreen = document.getElementById('start-screen');
@@ -33,21 +35,23 @@ const finalScore = document.getElementById('final-score');
 const audio = document.getElementById('game-audio');
 const timerText = document.getElementById('timer');
 
-// New Input Elements
-const answerInput = document.getElementById('answer-input');
-const submitBtn = document.getElementById('submit-btn');
+const extraTimeContainer = document.getElementById('extra-time-container');
+const optionsContainer = document.getElementById('options-container');
+
+// Buttons
+const guessEarlyBtn = document.getElementById('guess-early-btn');
+const addTimeBtn = document.getElementById('add-time-btn');
+const skipTimeBtn = document.getElementById('skip-time-btn');
 const nextBtn = document.getElementById('next-btn');
 
 // Initialize
 startBtn.addEventListener('click', startGame);
 restartBtn.addEventListener('click', startGame);
 playBtn.addEventListener('click', togglePlay);
-submitBtn.addEventListener('click', handleGuess);
 nextBtn.addEventListener('click', nextRound);
-
-answerInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') handleGuess();
-});
+guessEarlyBtn.addEventListener('click', showOptions);
+addTimeBtn.addEventListener('click', () => useExtraTime(5));
+skipTimeBtn.addEventListener('click', showOptions);
 
 function startGame() {
     currentRound = 0;
@@ -79,15 +83,20 @@ function nextRound() {
     // Select target song
     targetSong = songs[currentRound - 1];
     
+    // Reset Play Button
+    playBtn.style.pointerEvents = 'auto';
+    playBtn.style.opacity = '1';
+    
     // Reset UI
     feedbackText.innerText = '點擊播放並在 30 秒內猜出歌名！';
     feedbackText.style.color = 'inherit';
-    answerInput.value = '';
-    answerInput.disabled = false;
-    submitBtn.disabled = false;
-    submitBtn.style.display = 'block';
+    extraTimeContainer.style.display = 'none';
+    optionsContainer.style.display = 'none';
+    guessEarlyBtn.style.display = 'none';
     nextBtn.style.display = 'none';
-    answerInput.focus();
+    extraTimeOffered = false;
+    canGuess = false;
+    optionsContainer.innerHTML = '';
     
     resetTimer();
     stopAudio();
@@ -103,7 +112,7 @@ function nextRound() {
 }
 
 function togglePlay() {
-    if (!gameActive) return;
+    if (!gameActive || playBtn.style.pointerEvents === 'none') return;
     
     if (isPlaying) {
         stopAudio();
@@ -118,6 +127,10 @@ function playAudio() {
     playIcon.innerText = '⏸';
     vinyl.classList.add('playing');
     feedbackText.innerText = '正在播放... ⚡️';
+    
+    if (!canGuess) {
+        guessEarlyBtn.style.display = 'block';
+    }
 
     // Timer Logic
     if (!countdownInterval) {
@@ -131,12 +144,66 @@ function startTimer() {
         timerText.innerText = timeLeft;
         
         if (timeLeft <= 0) {
-            stopAudio();
-            feedbackText.innerText = '時間到！請輸入答案！';
             clearInterval(countdownInterval);
             countdownInterval = null;
+            stopAudio();
+            guessEarlyBtn.style.display = 'none';
+            
+            if (!extraTimeOffered) {
+                playBtn.style.pointerEvents = 'none';
+                playBtn.style.opacity = '0.5';
+                showExtraTimePrompt();
+            } else {
+                showOptions();
+            }
         }
     }, 1000);
+}
+
+function showExtraTimePrompt() {
+    extraTimeOffered = true;
+    feedbackText.innerText = '時間到囉！🐱';
+    extraTimeContainer.style.display = 'block';
+}
+
+function useExtraTime(seconds) {
+    extraTimeContainer.style.display = 'none';
+    timeLeft = seconds;
+    timerText.innerText = timeLeft;
+    playBtn.style.pointerEvents = 'auto';
+    playBtn.style.opacity = '1';
+    playAudio();
+}
+
+function showOptions() {
+    extraTimeContainer.style.display = 'none';
+    guessEarlyBtn.style.display = 'none';
+    optionsContainer.style.display = 'grid';
+    feedbackText.innerText = '請選擇正確的歌名！✨';
+    canGuess = true;
+    
+    // Only generate if not already visible
+    if (optionsContainer.innerHTML === '') {
+        generateOptions();
+    }
+}
+
+function generateOptions() {
+    optionsContainer.innerHTML = '';
+    
+    let options = [targetSong];
+    let otherSongs = songs.filter(s => s.title !== targetSong.title);
+    otherSongs.sort(() => Math.random() - 0.5);
+    options.push(...otherSongs.slice(0, 3));
+    options.sort(() => Math.random() - 0.5);
+    
+    options.forEach(song => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = song.title;
+        btn.onclick = () => handleGuess(song.title, btn);
+        optionsContainer.appendChild(btn);
+    });
 }
 
 function resetTimer() {
@@ -153,33 +220,48 @@ function stopAudio() {
     vinyl.classList.remove('playing');
 }
 
-function handleGuess() {
-    if (!gameActive || answerInput.disabled) return;
+function handleGuess(userAnswer, btn) {
+    if (!gameActive || !canGuess) return;
 
-    const userAnswer = answerInput.value.trim().toLowerCase();
-    const correctAnswer = targetSong.title.toLowerCase();
-
-    if (!userAnswer) {
-        feedbackText.innerText = '請輸入答案喔！🐱';
-        return;
-    }
-
-    stopAudio();
-    clearInterval(countdownInterval);
-    countdownInterval = null;
-    
-    answerInput.disabled = true;
-    submitBtn.style.display = 'none';
-    nextBtn.style.display = 'block';
+    const correctAnswer = targetSong.title;
 
     if (userAnswer === correctAnswer) {
+        // Correct Guess
+        canGuess = false;
+        stopAudio();
+        clearInterval(countdownInterval);
+        countdownInterval = null;
+        
+        // Disable and style buttons
+        const optionButtons = document.querySelectorAll('.option-btn');
+        optionButtons.forEach(b => {
+            b.disabled = true;
+            if (b.innerText === correctAnswer) {
+                b.classList.add('correct');
+            }
+        });
+
+        playBtn.style.pointerEvents = 'none';
+        playBtn.style.opacity = '0.5';
+        nextBtn.style.display = 'block';
         score += 100;
         updateScore();
         feedbackText.innerText = '✨ 太棒了！答對了！';
         feedbackText.style.color = '#15803d';
     } else {
-        feedbackText.innerText = `❌ 答錯囉，答案是：${targetSong.title}`;
+        // Wrong Guess
+        btn.disabled = true;
+        btn.classList.add('wrong');
+        feedbackText.innerText = '❌ 猜錯囉，再試試看！';
         feedbackText.style.color = '#991b1b';
+        
+        // Reset feedback text color after 2 seconds if still playing
+        setTimeout(() => {
+            if (gameActive && canGuess) {
+                feedbackText.innerText = isPlaying ? '正在播放... ⚡️' : '請選擇正確的歌名！✨';
+                feedbackText.style.color = 'inherit';
+            }
+        }, 2000);
     }
 }
 

@@ -340,3 +340,82 @@ body {
     font-size: 3rem;
     font-weight: 800;
 }
+
+/* New Styles */
+.extra-time-container {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 25px;
+    border: 3px solid #ffe4e9;
+    margin-bottom: 1.5rem;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.extra-time-container p {
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+}
+
+.button-group-row {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.button-group-row .btn {
+    margin: 0;
+    padding: 0.6rem 1.2rem;
+    font-size: 1rem;
+    flex: 1;
+}
+
+.options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 1rem;
+}
+
+.option-btn {
+    background: #fff;
+    border: 3px solid #ffe4e9;
+    padding: 1rem;
+    border-radius: 18px;
+    font-weight: 600;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60px;
+}
+
+.option-btn:hover {
+    border-color: var(--primary);
+    background: #fff0f3;
+    transform: translateY(-2px);
+}
+
+.option-btn:active {
+    transform: translateY(2px);
+}
+
+.option-btn.correct {
+    background: #dcfce7;
+    border-color: #22c55e;
+    color: #166534;
+}
+
+.option-btn.wrong {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
