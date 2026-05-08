@@ -101,6 +101,7 @@ body.page-home h1 {
 .btn-1 { background: linear-gradient(45deg, #ff9a9e, #fecfef); color: #e84393; text-shadow: 1px 1px 0px #fff;}
 .btn-2 { background: linear-gradient(45deg, #a18cd1, #fbc2eb); color: #6c5ce7; text-shadow: 1px 1px 0px #fff;}
 .btn-3 { background: linear-gradient(45deg, #84fab0, #8fd3f4); color: #00b894; text-shadow: 1px 1px 0px #fff;}
+.btn-4 { background: linear-gradient(45deg, #2e3192, #1bffff); color: #00d2ff; text-shadow: 1px 1px 0px #fff;}
 
 /* Automatic sweeping line */
 .nav-btn::before {
@@ -165,7 +166,7 @@ body.page-home h1 {
 }
 
 /* Labs Shared */
-body.page-lab1, body.page-lab2, body.page-lab3 {
+body.page-lab1, body.page-lab2, body.page-lab3, body.page-lab4 {
     text-align: center;
     color: #333;
 }
@@ -182,6 +183,9 @@ body.page-lab1, body.page-lab2, body.page-lab3 {
 body.page-lab1 .lab-container { animation: slideUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, floatContainer 4s ease-in-out infinite alternate 0.8s; }
 body.page-lab2 .lab-container { animation: popInRotate 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, floatContainer 4s ease-in-out infinite alternate 0.8s; }
 body.page-lab3 .lab-container { animation: bounceIn 1s cubic-bezier(0.28, 0.84, 0.42, 1) forwards, floatContainer 4s ease-in-out infinite alternate 1s; }
+body.page-lab4 .lab-container { animation: zoomIn 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, floatContainer 5s ease-in-out infinite alternate 1s; }
+
+@keyframes zoomIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
 @keyframes slideUp { 0% { transform: translateY(50px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
 @keyframes popInRotate { 0% { transform: scale(0.5) rotate(-5deg); opacity: 0; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
@@ -248,3 +252,26 @@ body.page-lab3 .back-btn:hover { background: #00b894; color: white; transform: t
 
 .magic-sparkle { position: absolute; background: linear-gradient(135deg, #fff, #8fd3f4); border-radius: 50%; animation: floatSparkle 3s ease-in-out infinite alternate; box-shadow: 0 0 15px #fff, 0 0 5px #8fd3f4; }
 @keyframes floatSparkle { 0% { transform: translateY(0) scale(1) rotate(0deg); } 100% { transform: translateY(-30px) scale(1.5) rotate(45deg); opacity: 0.3;} }
+
+/* Lab 4 */
+body.page-lab4 { background: linear-gradient(135deg, #141e30 0%, #243b55 100%); color: white; }
+body.page-lab4 h1 { color: #00d2ff; font-size: 3rem; text-shadow: 0 0 10px rgba(0,210,255,0.5); margin-top: 0; }
+body.page-lab4 p { font-size: 1.2rem; color: #ced4da; }
+
+body.page-lab4 .lab-container {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+}
+
+body.page-lab4 .back-btn {
+    display: inline-block; margin-top: 30px; padding: 15px 35px; background: rgba(255,255,255,0.05);
+    color: #00d2ff; text-decoration: none; border-radius: 50px; font-size: 1.1rem;
+    font-weight: 900; border: 2px solid #00d2ff; transition: all 0.3s ease;
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+}
+body.page-lab4 .back-btn:hover { background: #00d2ff; color: #141e30; transform: translateY(-3px) scale(1.05); box-shadow: 0 0 30px rgba(0, 210, 255, 0.5); }
+
+.star-field { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.star-lab4 { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: twinkle var(--duration) infinite alternate; }
+@keyframes twinkle { 0% { opacity: 0.3; transform: scale(1); } 100% { opacity: 1; transform: scale(1.2); } }

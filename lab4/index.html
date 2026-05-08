@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歡迎加入二林工商資處科</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kosugi+Maru&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+    
+    <!-- MediaPipe Hands Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+</head>
+<body class="page-lab4">
+    <canvas id="interactive-bg"></canvas>
+    
+    <!-- Camera Preview (hidden by default, can be toggled) -->
+    <div class="camera-container">
+        <video id="input-video" playsinline></video>
+        <canvas id="output-canvas"></canvas>
+        <div class="hand-status" id="hand-status">等待偵測手部...</div>
+    </div>
+
+    
+    <div class="welcome-wrapper">
+        <div class="welcome-container">
+            <h1 class="main-title">
+                <span class="line-1">歡迎加入</span>
+                <span class="line-2">二林工商資料處理科</span>
+            </h1>
+            <div class="sub-text">攜手共創資訊未來 ✨</div>
+            <div class="action-area">
+                <a href="../index.html" class="enter-btn">返回首頁</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
